@@ -1,1 +1,58 @@
+name: Build & deploy dashboard
+
+# Rebuilds metrics.json from the CSV and publishes the dashboard to GitHub Pages.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Hotel Reservations.csv"
+      - "analyze.py"
+      - "index.html"
+      - "requirements.txt"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:        # allow manual runs from the Actions tab
+
+# Permissions required to deploy to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deploy at a time; don't cancel an in-progress run
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Regenerate metrics.json from CSV
+        run: python analyze.py
+
+      - name: Stage site files
+        run: |
+          mkdir -p _site
+          cp index.html metrics.json _site/
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
 
