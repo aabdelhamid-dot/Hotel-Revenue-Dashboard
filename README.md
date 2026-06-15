@@ -4,7 +4,7 @@ A revenue-management analysis of **36,275 hotel bookings (2017–2018)**, with a
 dashboard of core KPIs and prioritized recommendations to increase revenue.
 
 👉 **[View the live dashboard](https://aabdelhamid-dot.github.io/hotel-revenue-dashboard/)**
-*(replace `YOUR-USERNAME` after enabling GitHub Pages)*
+
 
 > **Disclaimer:** Personal learning project using a generic, publicly-circulated sample
 > hotel-bookings dataset (synthetic booking IDs, no personal or company data). Not affiliated
