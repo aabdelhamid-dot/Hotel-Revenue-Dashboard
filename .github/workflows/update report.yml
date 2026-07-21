@@ -1,15 +1,15 @@
-name: Build & deploy dashboard
+name: Deploy Hotel KPI Dashboard
 
-# Rebuilds metrics.json from the CSV and publishes the dashboard to GitHub Pages.
+# Publishes the static, client-side dashboard app to GitHub Pages.
 on:
   push:
     branches: [main]
     paths:
-      - "Hotel Reservations.csv"
-      - "analyze.py"
       - "index.html"
-      - "requirements.txt"
-      - ".github/workflows/deploy.yml"
+      - "css/**"
+      - "js/**"
+      - "Hotel Reservations.csv"
+      - ".github/workflows/update report.yml"
   workflow_dispatch:        # allow manual runs from the Actions tab
 
 # Permissions required to deploy to GitHub Pages
@@ -24,7 +24,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-deploy:
+  deploy:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -32,20 +32,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Regenerate metrics.json from CSV
-        run: python analyze.py
-
       - name: Stage site files
         run: |
           mkdir -p _site
-          cp index.html metrics.json _site/
+          cp index.html _site/
+          cp "Hotel Reservations.csv" _site/
+          cp -r css _site/
+          cp -r js _site/
 
       - uses: actions/configure-pages@v5
 
@@ -55,4 +48,3 @@ jobs:
 
       - id: deployment
         uses: actions/deploy-pages@v4
-

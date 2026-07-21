@@ -1,109 +1,78 @@
-# 🏨 Hotel Revenue Dashboard — INN Hotels
+# 🏨 Hotel KPI Dashboard Builder
 
-A revenue-management analysis of **36,275 hotel bookings (2017–2018)**, with an interactive
-dashboard of core KPIs and prioritized recommendations to increase revenue.
+A **standalone, client-side dashboard app for hotel revenue managers.** Upload a booking-data CSV
+export from any PMS, map its columns to a common set of hotel fields, then pick from a catalog of
+20+ industry-standard revenue-management KPIs to build a dashboard — all rendered live in the
+browser. No backend, no install, no data ever leaves the browser tab.
 
-👉 **[View the live dashboard](https://aabdelhamid-dot.github.io/Hotel-Revenue-Dashboard/)**
+👉 **[Try the live app](https://aabdelhamid-dot.github.io/Hotel-Revenue-Dashboard/)**
 
-
-> **Disclaimer:** Personal learning project using a generic, publicly-circulated sample
-> hotel-bookings dataset (synthetic booking IDs, no personal or company data). Not affiliated
-> with or derived from my employer or any of its systems.
-
----
-
-## The headline finding
-
-**Cancellations are the single biggest revenue leak.** 32.8% of all bookings cancel,
-destroying ~**$4.3M of booked room-night value — 37.9% of total potential revenue**
-($11.3M booked → $7.1M realized). Every recommendation below targets it.
-
-## Core KPIs
-
-| KPI | Value | Read |
-|---|---|---|
-| Cancellation rate | **32.8%** | Very high; ~20% is a typical healthy ceiling |
-| ADR (all / kept) | $103 / $100 | Cancellations skew toward higher-rate bookings |
-| Avg length of stay | 3.0 nights | Weekday-heavy (80k week vs 29k weekend nights) |
-| Avg lead time | 85 days | Long lead → high cancellation exposure |
-| Repeat-guest share | **2.6%** | Almost no loyalty base — large upside |
-| Avg special requests | 0.62 | Low engagement signal |
-
-## What drives the leak
-
-- **Lead time is the strongest predictor.** 0–7 days → 8.9% cancel; 91–180 days → 44.9%; **180+ days → 73.9%.**
-- **Special requests signal commitment.** 0 requests → 43% cancel; 2 → 15%; **3+ → ~0%.**
-- **Channel.** Online is 64% of volume but cancels 36.5% and accounts for **77% ($3.3M) of all lost value**. Corporate cancels only 11%; repeat guests only 1.7%.
-- **Seasonality.** Demand and ADR peak Sep–Oct (~$116 ADR); cancellation spikes in summer (Jul 45%), lowest Dec–Jan.
-
-## Recommendations (smallest useful step first)
-
-| Priority | Action | Why / Impact |
-|---|---|---|
-| **P1** | Tiered deposit policy by lead time | Non-refundable terms on 90+ day bookings (45–74% cancel) — targets the bulk of the $4.3M leak |
-| **P1** | Capture special requests at booking | Moving guests 0→1 request cuts cancellation 43% → 24%; near-zero cost |
-| P2 | Repeat-guest / loyalty program | 2.6% repeat share, yet they cancel just 1.7% — stickiest segment |
-| P2 | Channel-aware overbooking | Recover Online's predictable 36% fallout; budget for walk costs |
-| P2 | Dynamic pricing in Sep–Oct peak | Demand & ADR both peak — raise rates, tighten discounts |
-| P2 | Midweek / corporate packages | Week nights (80k) ≫ weekend (29k); corporate cancels just 11% |
-
-**Risk:** stricter deposit policies can suppress total bookings — pilot per segment and track
-*realized* revenue, not just cancellation rate.
-
-## Data note
-
-The source file has **no room inventory or occupancy**, so true RevPAR/occupancy cannot be
-computed. "Value" = ADR × length of stay (room-night value). ADR, cancellation, lead time,
-channel and seasonal mix are fully reliable.
+> **Disclaimer:** Personal project. The bundled sample dataset is a generic, publicly-circulated
+> hotel-bookings dataset (synthetic booking IDs, no personal or company data). Not affiliated with
+> or derived from my employer or any of its systems.
 
 ---
 
-## Reproduce it
+## What it does
 
-```bash
-pip install -r requirements.txt
-python analyze.py        # prints the full report and writes metrics.json
-```
+1. **Load data** — drag & drop your own CSV, or load the bundled 36,275-booking sample dataset to explore.
+2. **Map columns** — the app auto-detects common hotel PMS column names (rate, nights, lead time,
+   status, market segment, room type, etc.) and lets you fix anything it guessed wrong. Fields you
+   don't have can be left unmapped; KPIs that need them are simply marked unavailable rather than
+   breaking the app.
+3. **Set property details** — property name, currency, and total room count (needed to unlock
+   Occupancy Rate and RevPAR).
+4. **Pick your KPIs** — a sidebar catalog grouped by category lets you toggle exactly the metrics
+   you want on the dashboard. Selections persist locally between visits.
+5. **Get a dashboard** — stat cards and charts render instantly from your data, computed entirely
+   in-browser.
 
-`analyze.py` reads `Hotel Reservations.csv`, prints every KPI table, and emits **`metrics.json`** —
-the exact figures embedded in the dashboard.
+## KPI catalog
+
+| Category | KPIs |
+|---|---|
+| Revenue & Yield | Total Bookings, ADR, Occupancy Rate, RevPAR, Potential Revenue, Realized Revenue, Revenue Lost to Cancellations, Revenue by Room Type |
+| Demand & Bookings | Cancellation Rate, Avg. Length of Stay, Avg. Booking Lead Time, Booking Pace by Lead Time, Seasonality by Month, Weekend vs. Weekday Nights |
+| Guest Profile | Repeat Guest Rate, Avg. Special Requests, Avg. Party Size, Parking Request Rate |
+| Channel & Segment | Market Segment Mix, Cancellation Rate by Segment, ADR by Segment |
+| Room Type | Room Type Mix, Cancellation Rate by Room Type |
+
+KPIs that need columns your data doesn't have (e.g. Occupancy/RevPAR without a room count) are
+greyed out in the picker instead of producing broken numbers.
+
+## Why standalone / sellable
+
+- **Zero backend, zero internet dependency.** Static HTML/CSS/JS with Chart.js and PapaParse
+  vendored locally (`js/vendor/`) — host it anywhere (GitHub Pages, S3, a USB stick, an intranet
+  server) or hand a hotel a folder to open locally, no CDN or connectivity required at runtime.
+- **Privacy by design.** CSV parsing and every KPI calculation happen in the visitor's browser;
+  booking data is never transmitted anywhere.
+- **Bring-your-own-data.** Column mapping means it isn't locked to one PMS export format.
+- **White-label ready.** Property name, currency, and branding live in `index.html`/`css/style.css`
+  and are trivial to reskin per customer.
 
 ## Files
 
 | File | Purpose |
 |---|---|
-| `index.html` | Self-contained dashboard (Chart.js via CDN); fetches `metrics.json` at runtime, with an embedded fallback for `file://` |
-| `analyze.py` | Full KPI analysis; writes `metrics.json` |
-| `metrics.json` | Computed figures the dashboard renders from |
-| `requirements.txt` | Python dependencies |
-| `.github/workflows/deploy.yml` | CI: rebuilds `metrics.json` and deploys to Pages on every push |
-| `Hotel Reservations.csv` | Source data (36,275 bookings) |
+| `index.html` | App shell — load/map/settings/dashboard steps |
+| `css/style.css` | Styling (dark theme, responsive, print-friendly) |
+| `js/app.js` | CSV parsing (PapaParse), column auto-mapping, KPI engine, Chart.js rendering |
+| `js/vendor/` | Vendored PapaParse &amp; Chart.js (MIT-licensed, bundled for offline use) |
+| `Hotel Reservations.csv` | Bundled sample dataset (36,275 bookings) for the "try it now" path |
+| `.github/workflows/update report.yml` | CI: deploys the static app to GitHub Pages on every push |
 
-## Publish to GitHub Pages
+## Run it locally
 
-```bash
-git init && git add . && git commit -m "Add hotel revenue dashboard"
-gh repo create hotel-revenue-dashboard --public --source=. --push
-```
-
-Then set Pages to deploy from the workflow (one time):
-
-```bash
-gh api -X POST repos/{owner}/hotel-revenue-dashboard/pages -f build_type=workflow
-```
-
-Or in the UI: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-
-The included workflow (`.github/workflows/deploy.yml`) then runs automatically: on every push
-that touches the CSV, `analyze.py`, or `index.html`, it reinstalls deps, **re-runs `analyze.py`
-to regenerate `metrics.json`**, and deploys the dashboard. You never hand-edit the published data.
-
-Site lands at `https://<your-username>.github.io/hotel-revenue-dashboard/`.
-
-### Local preview with live data
-
-Because browsers block `fetch` on `file://`, run a local server to see live mode:
+Because browsers block `fetch()` on `file://`, serve the folder over HTTP to use the bundled
+sample dataset (uploading your own CSV works either way):
 
 ```bash
 python -m http.server 8000   # then open http://localhost:8000
 ```
+
+## Deploy
+
+Push to `main` — the included GitHub Actions workflow copies `index.html`, `css/`, `js/`, and the
+sample CSV to GitHub Pages automatically. In the repo settings, set **Pages → Build and
+deployment → Source: GitHub Actions** once.
