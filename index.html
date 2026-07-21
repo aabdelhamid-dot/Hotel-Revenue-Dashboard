@@ -3,265 +3,142 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hotel Revenue Dashboard — INN Hotels</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<style>
-  :root{
-    --bg:#0f1419; --panel:#1a2129; --panel2:#222b35; --line:#2e3a47;
-    --txt:#e6edf3; --muted:#9fb0c0; --accent:#4f9cf9; --good:#3fb950;
-    --warn:#f0883e; --bad:#f85149; --gold:#e3b341;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:var(--bg);color:var(--txt);line-height:1.5;padding:0 0 60px}
-  header{background:linear-gradient(135deg,#16202b,#0f1419);border-bottom:1px solid var(--line);
-    padding:32px 24px;text-align:center}
-  header h1{font-size:28px;font-weight:700;letter-spacing:-.5px}
-  header p{color:var(--muted);margin-top:6px;font-size:14px}
-  .wrap{max-width:1200px;margin:0 auto;padding:0 24px}
-  .section-title{font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);
-    margin:36px 0 16px;font-weight:600}
-  /* data-source status pill */
-  .status{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;margin-top:10px;
-    border:1px solid var(--line);color:var(--muted)}
-  .status.live{color:var(--good);border-color:#26432c}
-  .status.fallback{color:var(--warn);border-color:#4a3420}
-  /* KPI cards */
-  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-top:28px}
-  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
-  .kpi .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-  .kpi .val{font-size:30px;font-weight:700;margin-top:8px}
-  .kpi .sub{font-size:12px;color:var(--muted);margin-top:4px}
-  .kpi.bad .val{color:var(--bad)} .kpi.good .val{color:var(--good)}
-  .kpi.warn .val{color:var(--warn)} .kpi.gold .val{color:var(--gold)}
-  /* leak banner */
-  .leak{background:linear-gradient(135deg,#2d1518,#1a2129);border:1px solid #5a2730;
-    border-radius:12px;padding:24px;margin-top:28px;display:flex;flex-wrap:wrap;
-    align-items:center;justify-content:space-between;gap:16px}
-  .leak .big{font-size:42px;font-weight:800;color:var(--bad)}
-  .leak .txt{max-width:620px;color:var(--muted);font-size:14px}
-  .leak .txt strong{color:var(--txt)}
-  /* charts grid */
-  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-  @media(max-width:820px){.grid{grid-template-columns:1fr}}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
-  .card h3{font-size:15px;font-weight:600;margin-bottom:4px}
-  .card .note{font-size:12px;color:var(--muted);margin-bottom:14px}
-  .card.full{grid-column:1/-1}
-  .chartbox{position:relative;height:300px}
-  /* recommendations */
-  .recs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:16px}
-  .rec{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);
-    border-radius:10px;padding:18px 20px}
-  .rec .tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
-    color:var(--accent);display:inline-block;margin-bottom:8px}
-  .rec.p1{border-left-color:var(--good)} .rec.p1 .tag{color:var(--good)}
-  .rec.p2{border-left-color:var(--warn)} .rec.p2 .tag{color:var(--warn)}
-  .rec h4{font-size:15px;margin-bottom:6px}
-  .rec p{font-size:13px;color:var(--muted)}
-  .rec .impact{font-size:12px;color:var(--gold);margin-top:8px;font-weight:600}
-  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:48px}
-  .disclaimer{background:var(--panel2);border:1px solid var(--line);border-radius:10px;
-    padding:14px 18px;font-size:12px;color:var(--muted);margin-top:24px}
-</style>
+<title>Hotel KPI Dashboard Builder</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="js/vendor/papaparse.min.js"></script>
+<script src="js/vendor/chart.umd.min.js"></script>
 </head>
 <body>
+
 <header>
-  <h1>🏨 Hotel Revenue Dashboard</h1>
-  <p id="subtitle">INN Hotels</p>
-  <div id="status" class="status">loading…</div>
+  <div class="brand">
+    <span style="font-size:22px">🏨</span>
+    <div>
+      <h1>Hotel KPI Dashboard Builder</h1>
+      <div class="tag">Upload your booking data, pick the KPIs that matter, get a revenue-manager dashboard — 100% in your browser.</div>
+    </div>
+  </div>
+  <nav>
+    <button class="btn ghost small" id="printBtn">Print / Export</button>
+  </nav>
 </header>
 
 <div class="wrap">
 
-  <!-- KPI CARDS (populated from data) -->
-  <div class="kpis" id="kpis"></div>
-
-  <!-- LEAK BANNER (populated from data) -->
-  <div class="leak">
-    <div><div class="big" id="leakBig">—</div><div style="color:var(--muted);font-size:13px">lost to cancellations</div></div>
-    <div class="txt">Cancellations destroy <strong id="leakPct">—</strong> of total potential room-night value
-      (<span id="leakPot">—</span> booked → <span id="leakReal">—</span> realized). This is the single
-      largest revenue lever in the dataset — every recommendation below targets it.</div>
+  <div class="stepper">
+    <span class="pill" id="pill-upload">1. Load Data</span>
+    <span class="pill" id="pill-mapping">2. Map Columns</span>
+    <span class="pill" id="pill-settings">3. Property Settings</span>
+    <span class="pill" id="pill-dashboard">4. Dashboard</span>
   </div>
 
-  <!-- CHARTS -->
-  <div class="section-title">Core Metrics</div>
-  <div class="grid">
-    <div class="card">
-      <h3>Cancellation by Lead Time</h3>
-      <div class="note">The strongest predictor: far-out bookings are speculative</div>
-      <div class="chartbox"><canvas id="leadChart"></canvas></div>
-    </div>
-    <div class="card">
-      <h3>Channel Mix &amp; Cancellation</h3>
-      <div class="note">Online dominates volume and lost value</div>
-      <div class="chartbox"><canvas id="segChart"></canvas></div>
-    </div>
-    <div class="card">
-      <h3>Special Requests vs Cancellation</h3>
-      <div class="note">Engagement signals commitment — 3+ requests ≈ 0% cancel</div>
-      <div class="chartbox"><canvas id="reqChart"></canvas></div>
-    </div>
-    <div class="card">
-      <h3>Room-Type Mix</h3>
-      <div class="note">Room Type 1 dominates the book of business</div>
-      <div class="chartbox"><canvas id="roomChart"></canvas></div>
-    </div>
-    <div class="card full">
-      <h3>Seasonality — Realized Revenue, ADR &amp; Cancellation by Month</h3>
-      <div class="note">Demand &amp; rate peak Sep–Oct; cancellation spikes in summer</div>
-      <div class="chartbox" style="height:340px"><canvas id="seasonChart"></canvas></div>
-    </div>
-  </div>
+  <!-- STEP 1: UPLOAD -->
+  <section class="step" id="step-upload">
+    <h2>Load your booking data</h2>
+    <div class="desc">Your data never leaves this browser tab — everything is parsed and computed locally. Nothing is uploaded to a server.</div>
 
-  <!-- RECOMMENDATIONS -->
-  <div class="section-title">Recommendations to Increase Revenue</div>
-  <div class="recs">
-    <div class="rec p1">
-      <span class="tag">Priority 1 · Start here</span>
-      <h4>Tiered deposit policy by lead time</h4>
-      <p>Require non-refundable deposits / stricter terms on bookings 90+ days out, where 45–74% cancel. Pilot on one segment; measure net realized revenue.</p>
-      <div class="impact">Targets the bulk of the cancellation leak</div>
+    <div class="dropzone" id="dropzone">
+      <div>📄 Drag &amp; drop a CSV export of your bookings here, or click to browse</div>
+      <input type="file" id="fileInput" accept=".csv">
     </div>
-    <div class="rec p1">
-      <span class="tag">Priority 1 · Low cost</span>
-      <h4>Capture special requests at booking</h4>
-      <p>Prompt meal prefs / amenities during checkout. Moving guests 0→1 request cuts cancellation 43% → 24%. Near-zero cost.</p>
-      <div class="impact">~19pt cancellation drop</div>
-    </div>
-    <div class="rec p2">
-      <span class="tag">Priority 2</span>
-      <h4>Build a repeat-guest / loyalty program</h4>
-      <p>Only 2.6% are repeat guests, yet they cancel just 1.7%. Email re-marketing + loyalty converts the stickiest segment.</p>
-      <div class="impact">Lowest-cancel segment growth</div>
-    </div>
-    <div class="rec p2">
-      <span class="tag">Priority 2</span>
-      <h4>Channel-aware overbooking</h4>
-      <p>Online's high fallout is predictable. Controlled overbooking + rate fences recover lost room-nights. Budget for walk costs.</p>
-      <div class="impact">Recover online cancellations</div>
-    </div>
-    <div class="rec p2">
-      <span class="tag">Priority 2</span>
-      <h4>Dynamic pricing in Sep–Oct peak</h4>
-      <p>Demand and ADR both peak here (~$116). Raise rates, tighten discounts, and protect inventory for higher-yield bookings.</p>
-      <div class="impact">Yield on peak demand</div>
-    </div>
-    <div class="rec p2">
-      <span class="tag">Priority 2</span>
-      <h4>Midweek &amp; corporate packages</h4>
-      <p>Week nights far outweigh weekend nights. Corporate cancels just 11% — grow it with midweek B2B packages.</p>
-      <div class="impact">Fill soft midweek demand</div>
-    </div>
-  </div>
 
-  <div class="disclaimer">
-    <strong>Data note:</strong> the source file contains no room inventory or occupancy, so true RevPAR/occupancy
-    cannot be computed. "Value" = ADR × length of stay (room-night value). ADR, cancellation, lead time,
-    channel and seasonal mix are fully reliable. Pilot deposit/policy changes per segment and track
-    <em>realized</em> revenue, since stricter terms can suppress total bookings.
-  </div>
+    <div class="choice-row">
+      <div class="choice-card">
+        <h3>Try the sample dataset</h3>
+        <p>36,275 real-world hotel bookings (INN Hotels, 2017–2018) bundled with this app — a fast way to explore every KPI.</p>
+        <button class="btn" id="sampleBtn">Load sample dataset</button>
+      </div>
+      <div class="choice-card">
+        <h3>Use your own PMS export</h3>
+        <p>Any CSV works. On the next screen you'll map your column names to the fields the dashboard understands — nothing needs to match exactly.</p>
+      </div>
+    </div>
 
-  <footer>Generated from <code>Hotel Reservations.csv</code> · Charts: Chart.js · Data: <code>metrics.json</code></footer>
+    <div class="filemeta hidden" id="fileMetaWrap">
+      Loaded: <strong id="fileMetaText"></strong> · <span id="rowCount"></span> rows detected.
+    </div>
+  </section>
+
+  <!-- STEP 2: MAPPING -->
+  <section class="step hidden" id="step-mapping">
+    <h2>Map your columns</h2>
+    <div class="desc">We auto-detected columns where possible. Adjust any that are wrong, and leave "— none —" for fields your data doesn't have — KPIs needing them will simply be marked unavailable.</div>
+    <div class="map-groups" id="mapGroups"></div>
+
+    <div id="statusValuesWrap" class="hidden" style="margin-top:20px">
+      <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px">Which status values count as "cancelled"?</h4>
+      <div class="status-values" id="statusValues"></div>
+    </div>
+
+    <div class="step-actions">
+      <button class="btn ghost" id="backToUploadBtn">← Back</button>
+      <button class="btn primary" id="toSettingsBtn">Continue →</button>
+    </div>
+  </section>
+
+  <!-- STEP 3: SETTINGS -->
+  <section class="step hidden" id="step-settings">
+    <h2>Property settings</h2>
+    <div class="desc">Used to label the dashboard and to unlock inventory-based KPIs like Occupancy and RevPAR.</div>
+    <div class="settings-grid">
+      <div class="field">
+        <label for="propertyName">Property name</label>
+        <input type="text" id="propertyName" placeholder="My Hotel">
+      </div>
+      <div class="field">
+        <label for="totalRooms">Total rooms in property</label>
+        <input type="number" id="totalRooms" min="1" placeholder="e.g. 150">
+        <div class="hint">Optional — needed only for Occupancy Rate &amp; RevPAR.</div>
+      </div>
+      <div class="field">
+        <label for="currency">Currency symbol</label>
+        <select id="currency">
+          <option value="$">$ USD</option>
+          <option value="€">€ EUR</option>
+          <option value="£">£ GBP</option>
+          <option value="₹">₹ INR</option>
+          <option value="¥">¥ JPY/CNY</option>
+          <option value="A$">A$ AUD</option>
+          <option value="C$">C$ CAD</option>
+        </select>
+      </div>
+    </div>
+    <div class="step-actions">
+      <button class="btn ghost" id="backToMappingBtn">← Back</button>
+      <button class="btn primary" id="buildDashboardBtn">Build dashboard →</button>
+    </div>
+  </section>
+
+  <!-- STEP 4: DASHBOARD -->
+  <section class="hidden" id="step-dashboard">
+    <div class="main-title">
+      <div>
+        <h2 id="propNameOut">My Hotel</h2>
+        <div class="sub" id="bookingCountOut"></div>
+      </div>
+      <button class="btn ghost small" id="editConfigBtn">⚙ Edit data / mapping</button>
+    </div>
+
+    <div class="dash">
+      <aside class="sidebar">
+        <h3>KPI Picker</h3>
+        <div class="count" id="kpiCount"></div>
+        <div id="kpiGroups"></div>
+      </aside>
+      <main>
+        <div id="dashboardContent"></div>
+        <div class="disclaimer">
+          KPIs are computed directly from your mapped columns. Occupancy and RevPAR require a total-room count and are
+          estimated from monthly granularity when a full arrival date isn't available. Review figures against your
+          PMS before using them for pricing decisions.
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <footer>Hotel KPI Dashboard Builder · runs entirely client-side · no data leaves your browser</footer>
 </div>
 
-<script>
-// Embedded fallback so the page also works when opened via file:// (browsers block fetch there).
-// On a server / GitHub Pages it fetches metrics.json so re-running analyze.py auto-updates charts.
-const FALLBACK = {"n_bookings":36275,"years":[2017,2018],"kpis":{"cancellation_rate_pct":32.8,"adr_all":103.42,"adr_kept":99.93,"avg_los":3.02,"avg_lead_time":85.2,"repeat_guest_share_pct":2.6,"avg_special_requests":0.62},"revenue":{"potential":11347279.0,"realized":7051105.0,"lost":4296174.0,"lost_pct_of_potential":37.9},"segments":[{"market_segment_type":"Online","bookings":23214,"share":64.0,"cxl_rate":36.5},{"market_segment_type":"Offline","bookings":10528,"share":29.0,"cxl_rate":29.9},{"market_segment_type":"Corporate","bookings":2017,"share":5.6,"cxl_rate":10.9},{"market_segment_type":"Complementary","bookings":391,"share":1.1,"cxl_rate":0.0},{"market_segment_type":"Aviation","bookings":125,"share":0.3,"cxl_rate":29.6}],"lead_time":[{"lead_bucket":"0-7d","bookings":"5801","cxl":"8.9"},{"lead_bucket":"8-30d","bookings":"6610","cxl":"18.9"},{"lead_bucket":"31-90d","bookings":"10815","cxl":"25.3"},{"lead_bucket":"91-180d","bookings":"7772","cxl":"44.9"},{"lead_bucket":"180d+","bookings":"5277","cxl":"73.9"}],"seasonality":[{"arrival_month":1,"cxl":2.4,"adr":74.7,"realized":206380.4},{"arrival_month":2,"cxl":25.2,"adr":80.7,"realized":280068.2},{"arrival_month":3,"cxl":29.7,"adr":91.9,"realized":439599.3},{"arrival_month":4,"cxl":36.4,"adr":102.0,"realized":507850.0},{"arrival_month":5,"cxl":36.5,"adr":113.8,"realized":520029.6},{"arrival_month":6,"cxl":40.3,"adr":112.0,"realized":550271.8},{"arrival_month":7,"cxl":45.0,"adr":111.6,"realized":555846.6},{"arrival_month":8,"cxl":39.0,"adr":113.2,"realized":757238.3},{"arrival_month":9,"cxl":33.4,"adr":115.9,"realized":949595.4},{"arrival_month":10,"cxl":35.4,"adr":104.5,"realized":984718.5},{"arrival_month":11,"cxl":29.4,"adr":91.3,"realized":553447.0},{"arrival_month":12,"cxl":13.3,"adr":89.0,"realized":746059.6}],"room_types":[{"room_type_reserved":"Room_Type 1","bookings":28130},{"room_type_reserved":"Room_Type 4","bookings":6057},{"room_type_reserved":"Room_Type 6","bookings":966},{"room_type_reserved":"Room_Type 2","bookings":692},{"room_type_reserved":"Room_Type 5","bookings":265},{"room_type_reserved":"Room_Type 7","bookings":158},{"room_type_reserved":"Room_Type 3","bookings":7}],"special_requests":[{"no_of_special_requests":0,"cxl":43.2},{"no_of_special_requests":1,"cxl":23.8},{"no_of_special_requests":2,"cxl":14.6},{"no_of_special_requests":3,"cxl":0.0},{"no_of_special_requests":4,"cxl":0.0},{"no_of_special_requests":5,"cxl":0.0}]};
-
-const C={txt:'#e6edf3',muted:'#9fb0c0',grid:'#2e3a47',accent:'#4f9cf9',good:'#3fb950',warn:'#f0883e',bad:'#f85149',gold:'#e3b341'};
-const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const ROOM_COLORS=[C.accent,C.good,C.gold,C.warn,'#a371f7',C.bad,'#6e7681'];
-const fmtMoney=n=> n>=1e6 ? '$'+(n/1e6).toFixed(1)+'M' : '$'+Math.round(n).toLocaleString();
-const cxlColor=v=> v>=60?C.bad : v>=35?C.warn : v>=20?C.gold : C.good;
-
-Chart.defaults.color=C.muted;
-Chart.defaults.font.family="-apple-system,Segoe UI,Roboto,sans-serif";
-Chart.defaults.plugins.legend.labels.color=C.txt;
-const gridOpt={grid:{color:C.grid},ticks:{color:C.muted}};
-
-function render(d, source){
-  // status + subtitle
-  const st=document.getElementById('status');
-  if(source==='live'){st.className='status live';st.textContent='● live — loaded from metrics.json';}
-  else{st.className='status fallback';st.textContent='● embedded snapshot (serve over http to load metrics.json live)';}
-  document.getElementById('subtitle').textContent=
-    `INN Hotels · ${d.n_bookings.toLocaleString()} bookings · ${d.years.join('–')}`;
-
-  // KPI cards
-  const k=d.kpis;
-  const cards=[
-    {cls:'bad', label:'Cancellation Rate', val:k.cancellation_rate_pct+'%', sub:'~20% is healthy ceiling'},
-    {cls:'', label:'ADR (kept)', val:'$'+Math.round(k.adr_kept), sub:'$'+Math.round(k.adr_all)+' all bookings'},
-    {cls:'', label:'Avg Length of Stay', val:k.avg_los.toFixed(1), sub:'nights'},
-    {cls:'warn', label:'Avg Lead Time', val:Math.round(k.avg_lead_time)+'d', sub:'long = high cancel risk'},
-    {cls:'bad', label:'Repeat-Guest Share', val:k.repeat_guest_share_pct+'%', sub:'major untapped loyalty'},
-    {cls:'', label:'Avg Special Requests', val:k.avg_special_requests.toFixed(2), sub:'commitment signal'},
-  ];
-  document.getElementById('kpis').innerHTML=cards.map(c=>
-    `<div class="kpi ${c.cls}"><div class="label">${c.label}</div><div class="val">${c.val}</div><div class="sub">${c.sub}</div></div>`).join('');
-
-  // leak banner
-  document.getElementById('leakBig').textContent=fmtMoney(d.revenue.lost);
-  document.getElementById('leakPct').textContent=d.revenue.lost_pct_of_potential+'%';
-  document.getElementById('leakPot').textContent=fmtMoney(d.revenue.potential);
-  document.getElementById('leakReal').textContent=fmtMoney(d.revenue.realized);
-
-  // Lead time
-  new Chart(leadChart,{type:'bar',data:{
-    labels:d.lead_time.map(r=>r.lead_bucket),
-    datasets:[{label:'Cancellation %',data:d.lead_time.map(r=>+r.cxl),
-      backgroundColor:d.lead_time.map(r=>cxlColor(+r.cxl)),borderRadius:6}]},
-    options:{plugins:{legend:{display:false}},scales:{y:{...gridOpt,title:{display:true,text:'Cancel %'}},x:gridOpt}}});
-
-  // Segment: bookings (bar) + cancellation (line)
-  new Chart(segChart,{data:{
-    labels:d.segments.map(r=>r.market_segment_type),
-    datasets:[
-      {type:'bar',label:'Bookings',data:d.segments.map(r=>r.bookings),backgroundColor:C.accent,borderRadius:6,yAxisID:'y'},
-      {type:'line',label:'Cancel %',data:d.segments.map(r=>r.cxl_rate),borderColor:C.bad,backgroundColor:C.bad,
-        tension:.3,yAxisID:'y1',pointRadius:4}]},
-    options:{scales:{
-      y:{...gridOpt,position:'left',title:{display:true,text:'Bookings'}},
-      y1:{...gridOpt,position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Cancel %'}},
-      x:gridOpt}}});
-
-  // Special requests
-  new Chart(reqChart,{type:'bar',data:{
-    labels:d.special_requests.map(r=>r.no_of_special_requests),
-    datasets:[{label:'Cancellation %',data:d.special_requests.map(r=>r.cxl),
-      backgroundColor:d.special_requests.map(r=>cxlColor(r.cxl)),borderRadius:6}]},
-    options:{plugins:{legend:{display:false}},scales:{y:{...gridOpt,title:{display:true,text:'Cancel %'}},
-      x:{...gridOpt,title:{display:true,text:'# special requests'}}}}});
-
-  // Room type doughnut
-  new Chart(roomChart,{type:'doughnut',data:{
-    labels:d.room_types.map(r=>r.room_type_reserved.replace('Room_Type','Type')),
-    datasets:[{data:d.room_types.map(r=>r.bookings),
-      backgroundColor:ROOM_COLORS,borderColor:'#1a2129',borderWidth:2}]},
-    options:{plugins:{legend:{position:'right'}}}});
-
-  // Seasonality
-  new Chart(seasonChart,{data:{labels:MONTHS,datasets:[
-    {type:'bar',label:'Realized revenue ($)',data:d.seasonality.map(r=>r.realized),
-     backgroundColor:'rgba(79,156,249,.55)',borderRadius:5,yAxisID:'y'},
-    {type:'line',label:'ADR ($)',data:d.seasonality.map(r=>r.adr),
-     borderColor:C.gold,backgroundColor:C.gold,tension:.3,yAxisID:'y1',pointRadius:3},
-    {type:'line',label:'Cancel %',data:d.seasonality.map(r=>r.cxl),
-     borderColor:C.bad,backgroundColor:C.bad,borderDash:[5,4],tension:.3,yAxisID:'y1',pointRadius:3}]},
-    options:{scales:{
-      y:{...gridOpt,position:'left',title:{display:true,text:'Realized revenue ($)'}},
-      y1:{...gridOpt,position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'ADR / Cancel %'}},
-      x:gridOpt}}});
-}
-
-// Try to load metrics.json live; fall back to the embedded snapshot.
-fetch('metrics.json',{cache:'no-store'})
-  .then(r=>{if(!r.ok)throw new Error(r.status);return r.json();})
-  .then(d=>render(d,'live'))
-  .catch(()=>render(FALLBACK,'fallback'));
-</script>
+<script src="js/app.js"></script>
 </body>
 </html>
