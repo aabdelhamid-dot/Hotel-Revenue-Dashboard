@@ -19,7 +19,6 @@ print(f"Avg length of stay (nights)    : {df.los.mean():5.2f}")
 print(f"Avg lead time (days)           : {df.lead_time.mean():6.1f}")
 print(f"Avg booking value (price*LOS)  : {df.booking_value.mean():6.2f}")
 print(f"Repeat-guest share             : {df.repeated_guest.mean()*100:5.1f}%")
-print(f"Avg special requests           : {df.no_of_special_requests.mean():4.2f}")
 print(f"Parking requested              : {df.required_car_parking_space.mean()*100:5.1f}%")
 
 tot_potential = df.booking_value.sum()
@@ -87,7 +86,7 @@ metrics = {
         "avg_los": round(df.los.mean(), 2),
         "avg_lead_time": round(df.lead_time.mean(), 1),
         "repeat_guest_share_pct": round(df.repeated_guest.mean()*100, 1),
-        "avg_special_requests": round(df.no_of_special_requests.mean(), 2),
+        
     },
     "revenue": {
         "potential": round(tot_potential, 0),
