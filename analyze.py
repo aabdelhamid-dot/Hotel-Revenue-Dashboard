@@ -59,11 +59,6 @@ rt['cxl']=(rt['cxl']*100).round(1)
 rt['share']=(rt['bookings']/N*100).round(1)
 print(rt.sort_values('bookings',ascending=False).round(1).to_string())
 
-print("\n--- SPECIAL REQUESTS vs CANCELLATION ---")
-sr=df.groupby('no_of_special_requests').agg(bookings=('Booking_ID','count'),cxl=('canceled','mean'),adr=('avg_price_per_room','mean'))
-sr['cxl']=(sr['cxl']*100).round(1)
-print(sr.round(1).to_string())
-
 print("\n--- REPEAT vs NEW GUEST ---")
 rg=df.groupby('repeated_guest').agg(bookings=('Booking_ID','count'),cxl=('canceled','mean'),adr=('avg_price_per_room','mean'))
 rg['cxl']=(rg['cxl']*100).round(1)
@@ -86,7 +81,6 @@ metrics = {
         "avg_los": round(df.los.mean(), 2),
         "avg_lead_time": round(df.lead_time.mean(), 1),
         "repeat_guest_share_pct": round(df.repeated_guest.mean()*100, 1),
-        
     },
     "revenue": {
         "potential": round(tot_potential, 0),
@@ -98,7 +92,6 @@ metrics = {
     "lead_time": lt.reset_index().astype(str).to_dict('records'),
     "seasonality": mo.reset_index().round(1).to_dict('records'),
     "room_types": rt.sort_values('bookings',ascending=False).reset_index().round(1).to_dict('records'),
-    "special_requests": sr.reset_index().round(1).to_dict('records'),
     "repeat_guest": rg.reset_index().round(1).to_dict('records'),
 }
 with open("metrics.json", "w") as f:
