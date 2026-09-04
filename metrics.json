@@ -1,0 +1,256 @@
+{
+  "n_bookings": 36275,
+  "years": [
+    2017,
+    2018
+  ],
+  "kpis": {
+    "cancellation_rate_pct": 32.8,
+    "adr_all": 103.42,
+    "adr_kept": 99.93,
+    "avg_los": 3.02,
+    "avg_lead_time": 85.2,
+    "repeat_guest_share_pct": 2.6
+  },
+  "revenue": {
+    "potential": 11347279.0,
+    "realized": 7051105.0,
+    "lost": 4296174.0,
+    "lost_pct_of_potential": 37.9
+  },
+  "segments": [
+    {
+      "market_segment_type": "Online",
+      "bookings": 23214,
+      "share": 64.0,
+      "cxl_rate": 36.5,
+      "adr": 112.3,
+      "los": 3.2,
+      "lead": 75.3,
+      "lost_value": 3318253.9
+    },
+    {
+      "market_segment_type": "Offline",
+      "bookings": 10528,
+      "share": 29.0,
+      "cxl_rate": 29.9,
+      "adr": 91.6,
+      "los": 2.9,
+      "lead": 122.9,
+      "lost_value": 894594.0
+    },
+    {
+      "market_segment_type": "Corporate",
+      "bookings": 2017,
+      "share": 5.6,
+      "cxl_rate": 10.9,
+      "adr": 82.9,
+      "los": 1.9,
+      "lead": 21.8,
+      "lost_value": 58062.2
+    },
+    {
+      "market_segment_type": "Complementary",
+      "bookings": 391,
+      "share": 1.1,
+      "cxl_rate": 0.0,
+      "adr": 3.1,
+      "los": 1.6,
+      "lead": 12.0,
+      "lost_value": 0.0
+    },
+    {
+      "market_segment_type": "Aviation",
+      "bookings": 125,
+      "share": 0.3,
+      "cxl_rate": 29.6,
+      "adr": 100.7,
+      "los": 4.0,
+      "lead": 5.5,
+      "lost_value": 25264.0
+    }
+  ],
+  "lead_time": [
+    {
+      "lead_bucket": "0-7d",
+      "bookings": "5801",
+      "cxl": "8.9",
+      "adr": "99.56272539217376"
+    },
+    {
+      "lead_bucket": "8-30d",
+      "bookings": "6610",
+      "cxl": "18.9",
+      "adr": "108.85886384266263"
+    },
+    {
+      "lead_bucket": "31-90d",
+      "bookings": "10815",
+      "cxl": "25.3",
+      "adr": "104.83772353213129"
+    },
+    {
+      "lead_bucket": "91-180d",
+      "bookings": "7772",
+      "cxl": "44.9",
+      "adr": "103.55170612454967"
+    },
+    {
+      "lead_bucket": "180d+",
+      "bookings": "5277",
+      "cxl": "73.9",
+      "adr": "97.7723289747963"
+    }
+  ],
+  "seasonality": [
+    {
+      "arrival_month": 1,
+      "bookings": 1014,
+      "cxl": 2.4,
+      "adr": 74.7,
+      "realized": 206380.4
+    },
+    {
+      "arrival_month": 2,
+      "bookings": 1704,
+      "cxl": 25.2,
+      "adr": 80.7,
+      "realized": 280068.2
+    },
+    {
+      "arrival_month": 3,
+      "bookings": 2358,
+      "cxl": 29.7,
+      "adr": 91.9,
+      "realized": 439599.3
+    },
+    {
+      "arrival_month": 4,
+      "bookings": 2736,
+      "cxl": 36.4,
+      "adr": 102.0,
+      "realized": 507850.0
+    },
+    {
+      "arrival_month": 5,
+      "bookings": 2598,
+      "cxl": 36.5,
+      "adr": 113.8,
+      "realized": 520029.6
+    },
+    {
+      "arrival_month": 6,
+      "bookings": 3203,
+      "cxl": 40.3,
+      "adr": 112.0,
+      "realized": 550271.8
+    },
+    {
+      "arrival_month": 7,
+      "bookings": 2920,
+      "cxl": 45.0,
+      "adr": 111.6,
+      "realized": 555846.6
+    },
+    {
+      "arrival_month": 8,
+      "bookings": 3813,
+      "cxl": 39.0,
+      "adr": 113.2,
+      "realized": 757238.3
+    },
+    {
+      "arrival_month": 9,
+      "bookings": 4611,
+      "cxl": 33.4,
+      "adr": 115.9,
+      "realized": 949595.4
+    },
+    {
+      "arrival_month": 10,
+      "bookings": 5317,
+      "cxl": 35.4,
+      "adr": 104.5,
+      "realized": 984718.5
+    },
+    {
+      "arrival_month": 11,
+      "bookings": 2980,
+      "cxl": 29.4,
+      "adr": 91.3,
+      "realized": 553447.0
+    },
+    {
+      "arrival_month": 12,
+      "bookings": 3021,
+      "cxl": 13.3,
+      "adr": 89.0,
+      "realized": 746059.6
+    }
+  ],
+  "room_types": [
+    {
+      "room_type_reserved": "Room_Type 1",
+      "bookings": 28130,
+      "cxl": 32.3,
+      "adr": 95.9,
+      "share": 77.5
+    },
+    {
+      "room_type_reserved": "Room_Type 4",
+      "bookings": 6057,
+      "cxl": 34.2,
+      "adr": 125.3,
+      "share": 16.7
+    },
+    {
+      "room_type_reserved": "Room_Type 6",
+      "bookings": 966,
+      "cxl": 42.0,
+      "adr": 182.2,
+      "share": 2.7
+    },
+    {
+      "room_type_reserved": "Room_Type 2",
+      "bookings": 692,
+      "cxl": 32.9,
+      "adr": 87.8,
+      "share": 1.9
+    },
+    {
+      "room_type_reserved": "Room_Type 5",
+      "bookings": 265,
+      "cxl": 27.2,
+      "adr": 123.7,
+      "share": 0.7
+    },
+    {
+      "room_type_reserved": "Room_Type 7",
+      "bookings": 158,
+      "cxl": 22.8,
+      "adr": 155.2,
+      "share": 0.4
+    },
+    {
+      "room_type_reserved": "Room_Type 3",
+      "bookings": 7,
+      "cxl": 28.6,
+      "adr": 73.7,
+      "share": 0.0
+    }
+  ],
+  "repeat_guest": [
+    {
+      "repeated_guest": 0,
+      "bookings": 35345,
+      "cxl": 33.6,
+      "adr": 104.4
+    },
+    {
+      "repeated_guest": 1,
+      "bookings": 930,
+      "cxl": 1.7,
+      "adr": 65.6
+    }
+  ]
+}
