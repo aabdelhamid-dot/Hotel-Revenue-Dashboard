@@ -3,8 +3,8 @@
 A revenue-management analysis of **36,275 hotel bookings (2017–2018)**, with an interactive
 dashboard of core KPIs and prioritized recommendations to increase revenue.
 
-👉 **[View the live dashboard](https://YOUR-USERNAME.github.io/hotel-revenue-dashboard/)**
-*(replace `YOUR-USERNAME` after enabling GitHub Pages)*
+👉 **[View the live dashboard](https://aabdelhamid-dot.github.io/Hotel-Revenue-Dashboard/)**
+
 
 > **Disclaimer:** Personal learning project using a generic, publicly-circulated sample
 > hotel-bookings dataset (synthetic booking IDs, no personal or company data). Not affiliated
@@ -79,31 +79,4 @@ the exact figures embedded in the dashboard.
 | `.github/workflows/deploy.yml` | CI: rebuilds `metrics.json` and deploys to Pages on every push |
 | `Hotel Reservations.csv` | Source data (36,275 bookings) |
 
-## Publish to GitHub Pages
 
-```bash
-git init && git add . && git commit -m "Add hotel revenue dashboard"
-gh repo create hotel-revenue-dashboard --public --source=. --push
-```
-
-Then set Pages to deploy from the workflow (one time):
-
-```bash
-gh api -X POST repos/{owner}/hotel-revenue-dashboard/pages -f build_type=workflow
-```
-
-Or in the UI: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-
-The included workflow (`.github/workflows/deploy.yml`) then runs automatically: on every push
-that touches the CSV, `analyze.py`, or `index.html`, it reinstalls deps, **re-runs `analyze.py`
-to regenerate `metrics.json`**, and deploys the dashboard. You never hand-edit the published data.
-
-Site lands at `https://<your-username>.github.io/hotel-revenue-dashboard/`.
-
-### Local preview with live data
-
-Because browsers block `fetch` on `file://`, run a local server to see live mode:
-
-```bash
-python -m http.server 8000   # then open http://localhost:8000
-```
