@@ -182,7 +182,7 @@ function render(d, source){
   if(source==='live'){st.className='status live';st.textContent='● live — loaded from metrics.json';}
   else{st.className='status fallback';st.textContent='● embedded snapshot (serve over http to load metrics.json live)';}
   document.getElementById('subtitle').textContent=
-    `INN Hotels · ${d.n_bookings.toLocaleString()} bookings · ${d.years.join('–')}`;
+    ` ${d.n_bookings.toLocaleString()} bookings · ${d.years.join('–')}`;
 
   // KPI cards
   const k=d.kpis;
