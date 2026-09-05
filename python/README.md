@@ -27,7 +27,6 @@ destroying ~**$4.3M of booked room-night value — 37.9% of total potential reve
 | Avg length of stay | 3.0 nights | Weekday-heavy (80k week vs 29k weekend nights) |
 | Avg lead time | 85 days | Long lead → high cancellation exposure |
 | Repeat-guest share | **2.6%** | Almost no loyalty base — large upside |
-| Avg special requests | 0.62 | Low engagement signal |
 
 ## What drives the leak
 
