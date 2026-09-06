@@ -1,4 +1,4 @@
-# 🏨 Hotel Revenue Dashboard — INN Hotels
+# 🏨 Hotel Revenue Dashboard
 
 A revenue-management analysis of **36,275 hotel bookings (2017–2018)**, with an interactive
 dashboard of core KPIs and prioritized recommendations to increase revenue.
